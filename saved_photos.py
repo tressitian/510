@@ -51,15 +51,16 @@ def show_saved_photos():
                 col = [col1, col2, col3][idx % 3]
                 with col:
                     st.image(img, use_container_width=True)
-                    st.caption(f"📅 Taken: {metadata['date_taken']}")
-                    st.caption(f"🏷️ Tags: {', '.join(metadata['clothing_tags'])}")
-                    st.caption(f"👔 Last worn: {metadata['date_wore'][-1]}")
+                    st.caption(f"👕 Type: {metadata['type']}")
+                    st.caption(f"✨ Style: {metadata['style']}")
+                    st.caption(f"🎨 Color: {metadata['color']}")
+                    st.caption(f"📅 Last worn: {metadata['date_wore'][-1]}")
             else:
                 # Display without metadata
                 col = [col1, col2, col3][idx % 3]
                 with col:
                     st.image(img, use_container_width=True)
-                    st.caption(f"No metadata available")
+                    st.caption(f"ℹ️ No metadata available")
     else:
         st.info("No photos captured yet!")
 
