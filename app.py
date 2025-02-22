@@ -4,6 +4,19 @@ import numpy as np
 from datetime import datetime
 import os
 
+def get_saved_images(directory):
+    images = []
+    if os.path.exists(directory):
+        for file in sorted(os.listdir(directory), reverse=True):
+            if file.endswith(".jpg"):
+                timestamp = file.replace("photo_", "").replace(".jpg", "")
+                try:
+                    readable_time = datetime.strptime(timestamp, "%Y%m%d_%H%M%S").strftime("%Y-%m-%d %H:%M:%S")
+                    images.append((os.path.join(directory, file), readable_time))
+                except ValueError:
+                    continue
+    return images
+
 # Set up the app title
 st.title("Webcam Photo Capture App")
 
@@ -31,3 +44,10 @@ if img_file_buffer is not None:
 
     st.success(f"Photo saved as {filename}")
     st.image(image_rgb, caption="Captured Image", use_container_width=True)
+
+# Sidebar to show existing photos
+with st.sidebar:
+    st.header("Saved Photos")
+    saved_images = get_saved_images(SAVE_DIR)
+    for img_path, img_time in saved_images:
+        st.image(img_path, caption=f"Taken on {img_time}", use_container_width=True)
