@@ -1,5 +1,6 @@
 {
-    "date_taken": "2024-03-21 12:34:56",
-    "clothing_tags": ["jacket", "winter", "casual"],
+    "type": "jacket",
+    "style": "casual",
+    "color": "black",
     "date_wore": ["2024-03-20"]
 }
