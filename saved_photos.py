@@ -5,6 +5,8 @@ from datetime import datetime
 import os
 from PIL import Image
 import json
+from utils.gpt_vision import call_gpt4_vision  # Update import
+import time
 
 SAVE_DIR = "captured_images"
 os.makedirs(SAVE_DIR, exist_ok=True)
@@ -23,6 +25,14 @@ def save_photo_metadata(photo_filename, tags=None):
         json.dump(metadata, f, indent=4)
 
 def show_saved_photos():
+    # Initialize session state for photo processing
+    if 'processing_photo' not in st.session_state:
+        st.session_state.processing_photo = False
+    if 'last_photo_time' not in st.session_state:
+        st.session_state.last_photo_time = None
+    if 'new_photo_taken' not in st.session_state:
+        st.session_state.new_photo_taken = False
+
     st.header("Your Photos")
     
     # Get list of photos and sort by date (newest first)
@@ -30,16 +40,20 @@ def show_saved_photos():
     photos = [p for p in photos if p.endswith(('.jpg', '.jpeg', '.png'))]
     photos.sort(reverse=True)
 
+    # Display existing photos first
     if photos:
+        # Define a fixed display size for all images
+        DISPLAY_SIZE = (300, 300)
+        
         # Create three columns for photo display
         col1, col2, col3 = st.columns(3)
         
         # Distribute photos across columns
         for idx, photo in enumerate(photos):
-            # Load image
+            # Load image and resize to fixed dimensions
             img_path = os.path.join(SAVE_DIR, photo)
             img = Image.open(img_path)
-            img.thumbnail((300, 300))
+            img = img.resize(DISPLAY_SIZE, Image.Resampling.LANCZOS)
             
             # Load metadata if exists
             json_path = img_path + '.json'
@@ -71,10 +85,22 @@ def show_saved_photos():
         "Take a picture",
         key="camera",
         help="The photo will be cropped to a square after capture",
-        disabled=False,
+        disabled=st.session_state.processing_photo,
         label_visibility="visible"
     )
-    if img_file_buffer is not None:
+    
+    if (img_file_buffer is not None and 
+        not st.session_state.processing_photo and 
+        not st.session_state.new_photo_taken):  # Only process if it's a new photo
+        
+        st.session_state.processing_photo = True
+        st.session_state.new_photo_taken = True
+        
+        # Generate filename using timestamp
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"{SAVE_DIR}/photo_{timestamp}.jpg"
+        json_filename = filename + '.json'
+        
         image = np.array(bytearray(img_file_buffer.read()), dtype=np.uint8)
         image = cv2.imdecode(image, cv2.IMREAD_COLOR)
         
@@ -86,12 +112,56 @@ def show_saved_photos():
         cropped_image = image[start_y:start_y+size, start_x:start_x+size]
         
         image_rgb = cv2.cvtColor(cropped_image, cv2.COLOR_BGR2RGB)
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        filename = f"{SAVE_DIR}/photo_{timestamp}.jpg"
         cv2.imwrite(filename, cropped_image)
-        st.success(f"Photo saved as {filename}")
         
-        # Create three columns for preview
-        preview_col1, preview_col2, preview_col3 = st.columns(3)
-        with preview_col2:  # Use middle column for centered preview
-            st.image(image_rgb, caption="Captured Image (Square Crop)", use_container_width=True)
+        # Get metadata from GPT
+        metadata = get_clothing_metadata_from_gpt(filename)
+        if metadata:
+            # Save metadata to JSON file
+            with open(json_filename, 'w') as f:
+                json.dump(metadata, f, indent=4)
+            st.success(f"Photo and metadata saved successfully!")
+            
+            # Create three columns for preview
+            preview_col1, preview_col2, preview_col3 = st.columns(3)
+            with preview_col2:  # Use middle column for centered preview
+                st.image(image_rgb, caption="Captured Image (Square Crop)", use_container_width=True)
+            
+            # Reset processing flag and rerun
+            st.session_state.processing_photo = False
+            st.rerun()
+        else:
+            st.warning("Photo saved but couldn't generate metadata")
+            if os.path.exists(filename):
+                os.remove(filename)  # Clean up the photo if metadata generation failed
+            st.session_state.processing_photo = False
+            st.session_state.new_photo_taken = False
+
+    # Reset new_photo_taken flag when camera input is cleared
+    if img_file_buffer is None:
+        st.session_state.new_photo_taken = False
+
+def get_clothing_metadata_from_gpt(image_path):
+    """Use GPT-4-vision to analyze the clothing image and return metadata"""
+    prompt = """Analyze this clothing item and provide ONLY a JSON object with these exact keys:
+    {
+        "type": "the type of clothing (e.g., jacket, shirt, pants, dress)",
+        "style": "the style (e.g., casual, formal, sporty)",
+        "color": "the primary color"
+    }"""
+    
+    try:
+        response = call_gpt4_vision(image_path, prompt)
+        content = response.choices[0].message.content.strip()
+        content = content.replace('\n', '').replace('\r', '').strip()
+        if content.startswith('```json'):
+            content = content[7:-3].strip()
+        elif content.startswith('```'):
+            content = content[3:-3].strip()
+            
+        metadata = json.loads(content)
+        metadata["date_wore"] = [datetime.now().strftime("%Y-%m-%d")]
+        return metadata
+    except Exception as e:
+        st.error(f"Error analyzing image: {str(e)}")
+        return None
