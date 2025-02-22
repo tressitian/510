@@ -7,7 +7,7 @@ import analyze
 st.title("Webcam Photo Capture App")
 
 # Create tabs for navigation
-tab1, tab2, tab3, tab4 = st.tabs(["Saved Photos", "AI Suggestion", "Clothes Suggestion", "Analyze"])
+tab1, tab2, tab3, tab4 = st.tabs(["Your Closet", "Outfit Suggestions", "New Clothes Purchase", "Analyze"])
 
 # Display content based on selected tab
 with tab1:
