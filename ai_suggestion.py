@@ -53,25 +53,31 @@ def show_ai_suggestion():
             },
             {
                 "title": "Smart Casual",
-                "image": "outfit_images/outfit1.jpg",
+                "image": "outfit_images/outfit2.jpg",
                 "items": [
-                    "White crew neck t-shirt",
-                    "Gray blazer",
-                    "Dark wash jeans",
-                    "White minimalist sneakers"
+                    "Gray hoodie",
+                    "Khaki pants",
+                    "White sneakers"
                 ],
-                "reason": "A modern take on casual wear that's perfect for various social settings. The blazer adds sophistication while the sneakers keep it contemporary."
+                "reason": "A comfortable yet put-together look that works for casual outings. The hoodie keeps it relaxed while the khaki pants add a touch of polish, and white sneakers complete this versatile everyday outfit."
             },
             {
                 "title": "Casual Weekend",
-                "image": "outfit_images/outfit1.jpg",
+                "image": "outfit_images/outfit3.jpg",
                 "items": [
-                    "Navy polo shirt",
-                    "Beige chino shorts",
-                    "Canvas sneakers",
-                    "Leather watch"
+                    "Leather jacket",
+                    "Denim jeans"
                 ],
-                "reason": "Ideal for weekend activities while maintaining style. The polo adds a touch of refinement to a casual ensemble."
+                "reason": "A classic combination that balances style with edge. The leather jacket adds a bold statement while the denim jeans provide versatility and comfort for any weekend activity."
+            },
+            {
+                "title": "Casual Weekend",
+                "image": "outfit_images/outfit4.jpg",
+                "items": [
+                    "FOG hoodie",
+                    "Khaki pants",
+                ],
+                "reason": "A trendy streetwear ensemble that combines comfort with style. The FOG hoodie brings a premium casual element while the khaki pants elevate the look beyond basic loungewear."
             }
         ]
         
