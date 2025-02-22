@@ -9,6 +9,19 @@ import json
 SAVE_DIR = "captured_images"
 os.makedirs(SAVE_DIR, exist_ok=True)
 
+def save_photo_metadata(photo_filename, tags=None):
+    """Save metadata for a photo in a JSON file"""
+    metadata = {
+        "date_taken": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "clothing_tags": tags or [],  # Default empty list if no tags provided
+        "date_wore": [datetime.now().strftime("%Y-%m-%d")]  # Initialize with today's date
+    }
+    
+    # Save with same name as photo but .json extension
+    json_filename = photo_filename + '.json'
+    with open(json_filename, 'w') as f:
+        json.dump(metadata, f, indent=4)
+
 def show_saved_photos():
     st.header("Your Photos")
     
@@ -23,35 +36,30 @@ def show_saved_photos():
         
         # Distribute photos across columns
         for idx, photo in enumerate(photos):
-            # Parse date from filename
-            date_str = photo[6:21]
-            try:
-                date_obj = datetime.strptime(date_str, "%Y%m%d_%H%M%S")
-                formatted_date = date_obj.strftime("%Y-%m-%d %H:%M:%S")
-            except ValueError:
-                formatted_date = "Unknown date"
-
             # Load image
             img_path = os.path.join(SAVE_DIR, photo)
             img = Image.open(img_path)
             img.thumbnail((300, 300))
             
-            # Display in appropriate column
-            col = [col1, col2, col3][idx % 3]
-            with col:
-                st.image(img, use_container_width=True)
+            # Load metadata if exists
+            json_path = img_path + '.json'
+            if os.path.exists(json_path):
+                with open(json_path, 'r') as f:
+                    metadata = json.load(f)
                 
-                # Load and display metadata if exists
-                json_path = os.path.splitext(img_path)[0] + '.json'
-                if os.path.exists(json_path):
-                    with open(json_path, 'r') as f:
-                        metadata = json.load(f)
-                    
+                # Display in appropriate column
+                col = [col1, col2, col3][idx % 3]
+                with col:
+                    st.image(img, use_container_width=True)
                     st.caption(f"📅 Taken: {metadata['date_taken']}")
                     st.caption(f"🏷️ Tags: {', '.join(metadata['clothing_tags'])}")
                     st.caption(f"👔 Last worn: {metadata['date_wore'][-1]}")
-                else:
-                    st.caption(formatted_date)
+            else:
+                # Display without metadata
+                col = [col1, col2, col3][idx % 3]
+                with col:
+                    st.image(img, use_container_width=True)
+                    st.caption(f"No metadata available")
     else:
         st.info("No photos captured yet!")
 
