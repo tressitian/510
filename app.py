@@ -1,53 +1,34 @@
 import streamlit as st
-import cv2
-import numpy as np
-from datetime import datetime
-import os
-
-def get_saved_images(directory):
-    images = []
-    if os.path.exists(directory):
-        for file in sorted(os.listdir(directory), reverse=True):
-            if file.endswith(".jpg"):
-                timestamp = file.replace("photo_", "").replace(".jpg", "")
-                try:
-                    readable_time = datetime.strptime(timestamp, "%Y%m%d_%H%M%S").strftime("%Y-%m-%d %H:%M:%S")
-                    images.append((os.path.join(directory, file), readable_time))
-                except ValueError:
-                    continue
-    return images
+import saved_photos
+import ai_suggestion
+import clothes_suggestion
+import analyze
 
 # Set up the app title
 st.title("Webcam Photo Capture App")
 
-# Create a directory to store images
-SAVE_DIR = "captured_images"
-os.makedirs(SAVE_DIR, exist_ok=True)
+# Navigation logic
+page = st.session_state.get("page", "Saved Photos")
 
-# Access the webcam
-img_file_buffer = st.camera_input("Take a picture")
+if st.button("Saved Photos"):
+    page = "Saved Photos"
+    st.session_state.page = page
+elif st.button("AI Suggestion"):
+    page = "AI Suggestion"
+    st.session_state.page = page
+elif st.button("Clothes Suggestion"):
+    page = "Clothes Suggestion"
+    st.session_state.page = page
+elif st.button("Analyze"):
+    page = "Analyze"
+    st.session_state.page = page
 
-if img_file_buffer is not None:
-    # Convert the image to OpenCV format
-    image = np.array(bytearray(img_file_buffer.read()), dtype=np.uint8)
-    image = cv2.imdecode(image, cv2.IMREAD_COLOR)
-
-    # Convert BGR to RGB
-    image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-
-    # Generate a filename with timestamp
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    filename = f"{SAVE_DIR}/photo_{timestamp}.jpg"
-
-    # Save the image locally
-    cv2.imwrite(filename, image)
-
-    st.success(f"Photo saved as {filename}")
-    st.image(image_rgb, caption="Captured Image", use_container_width=True)
-
-# Sidebar to show existing photos
-with st.sidebar:
-    st.header("Saved Photos")
-    saved_images = get_saved_images(SAVE_DIR)
-    for img_path, img_time in saved_images:
-        st.image(img_path, caption=f"Taken on {img_time}", use_container_width=True)
+# Display the selected page
+if page == "Saved Photos":
+    saved_photos.show_saved_photos()  # Call the function from saved_photos.py
+elif page == "AI Suggestion":
+    ai_suggestion.show_ai_suggestion()  # Call the function from ai_suggestion.py
+elif page == "Clothes Suggestion":
+    clothes_suggestion.show_clothes_suggestion()  # Call the function from clothes_suggestion.py
+elif page == "Analyze":
+    analyze.show_analyze()  # Call the function from analyze.py
