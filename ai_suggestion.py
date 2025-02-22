@@ -32,8 +32,8 @@ def show_ai_suggestion():
     )
     
     if user_preference:
-        # Display outfit suggestions
-        st.subheader("Recommended Outfits")
+        # Display outfit suggestions based on user input
+        st.subheader("Suggestions based on your needs:")
         
         # Create three columns for outfit suggestions
         col1, col2, col3 = st.columns(3)
@@ -79,7 +79,61 @@ def show_ai_suggestion():
         for col, outfit in zip([col1, col2, col3], outfits):
             with col:
                 st.markdown(f"### {outfit['title']}")
-                st.image(outfit['image'], caption=f"{outfit['title']} Preview")
+                st.image(outfit['image'])
+                st.markdown("**Selected Items:**")
+                items_list = "\n".join([f"- {item}" for item in outfit['items']])
+                st.markdown(items_list)
+                st.markdown("**Why this outfit:**")
+                st.markdown(outfit['reason'])
+    else:
+        # Random Suggestions Section (only shown when no user input)
+        st.subheader("Random Suggestions")
+        
+        # Create three columns for random outfit suggestions
+        rand_col1, rand_col2, rand_col3 = st.columns(3)
+        
+        # Random outfit suggestions data
+        random_outfits = [
+            {
+                "title": "Trendy Casual",
+                "image": "outfit_images/outfit1.jpg",
+                "items": [
+                    "Oversized graphic tee",
+                    "High-waisted jeans",
+                    "White sneakers",
+                    "Statement necklace"
+                ],
+                "reason": "A contemporary casual look that's both comfortable and stylish."
+            },
+            {
+                "title": "Sporty Chic",
+                "image": "outfit_images/outfit1.jpg",
+                "items": [
+                    "Athletic jacket",
+                    "Fitted tank top",
+                    "Yoga pants",
+                    "Running shoes"
+                ],
+                "reason": "Perfect blend of athletic wear and street style."
+            },
+            {
+                "title": "Weekend ",
+                "image": "outfit_images/outfit1.jpg",
+                "items": [
+                    "Floral sundress",
+                    "Denim jacket",
+                    "Sandals",
+                    "Straw hat"
+                ],
+                "reason": "Light and breezy outfit ideal for casual social occasions."
+            }
+        ]
+        
+        # Display random outfits
+        for col, outfit in zip([rand_col1, rand_col2, rand_col3], random_outfits):
+            with col:
+                st.markdown(f"### {outfit['title']}")
+                st.image(outfit['image'])
                 st.markdown("**Selected Items:**")
                 items_list = "\n".join([f"- {item}" for item in outfit['items']])
                 st.markdown(items_list)
