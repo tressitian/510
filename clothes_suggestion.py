@@ -37,6 +37,7 @@
 
 import streamlit as st
 
+
 def show_clothes_suggestion():
     st.header("New Clothes Suggestions")
     
@@ -44,19 +45,18 @@ def show_clothes_suggestion():
     # 1) Porsche Jacket
     # 2) Supreme Jeans
     
-    # We'll display 2 outfit suggestions (instead of 3)
     outfits = [
         {
-            "image_url": "https://placeholder.com/300x400",
+            "image_url": "https://i.ebayimg.com/images/g/vGsAAOSwebVns3uy/s-l300.jpg",
             "brand": "Porsche",
             "price": "$2,190",
             "recommended_size": "L",
-            "style": "",  # User provided "Style:" with no specific descriptor
+            "style": "",  # Provided "Style:" but no specific descriptor
             "color": "Black and Yellow",
             "shop_link": "https://stockx.com/aime-leon-dore-x-porsche-993-turbo-leather-club-jacket-british-racing-green"
         },
         {
-            "image_url": "https://placeholder.com/300x400",
+            "image_url": "https://us.supreme.com/cdn/shop/files/P31_SS25_RegularJean_Newsprint01_Reshoot_360x.jpg?v=1738778018",
             "brand": "Supreme",
             "price": "$210",
             "recommended_size": "L",
@@ -97,3 +97,22 @@ def show_clothes_suggestion():
                 )
             
             st.divider()  # Add a visual separator between outfits
+    
+    # Add a "Generated Outcome" section
+    st.subheader("Generated Outcome")
+    st.write(
+        "Here's a hypothetical look at how these two recommendations might come together. "
+        "We combined the Porsche jacket with the Supreme jeans for a bold, stylish ensemble."
+    )
+    
+    # Replace this placeholder with your actual image or a generated image
+    st.image(
+        "https://placeholder.com/400x600",
+        caption="Sample outcome combining both recommendations"
+    )
+    
+    # You could also add additional descriptive text about the final style
+    st.write(
+        "The sleek black and yellow accents on the jacket pair well with the "
+        "blue newspaper print jeans, creating a unique streetwear statement."
+    )
