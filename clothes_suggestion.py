@@ -99,20 +99,20 @@ def show_clothes_suggestion():
             st.divider()  # Add a visual separator between outfits
     
     # Add a "Generated Outcome" section
-    st.subheader("Generated Outcome")
-    st.write(
-        "Here's a hypothetical look at how these two recommendations might come together. "
-        "We combined the Porsche jacket with the Supreme jeans for a bold, stylish ensemble."
-    )
+    # st.subheader("Generated Outcome")
+    # st.write(
+    #     "Here's a hypothetical look at how these two recommendations might come together. "
+    #     "We combined the Porsche jacket with the Supreme jeans for a bold, stylish ensemble."
+    # )
     
-    # Replace this placeholder with your actual image or a generated image
-    st.image(
-        "https://drive.google.com/file/d/1HiGRsAVpD-O1dUnlSoY1B7ZABxtZPqK4/view?usp=sharing",
-        caption="Sample outcome combining both recommendations"
-    )
+    # # Replace this placeholder with your actual image or a generated image
+    # st.image(
+    #     "https://drive.google.com/file/d/1HiGRsAVpD-O1dUnlSoY1B7ZABxtZPqK4/view?usp=sharing",
+    #     caption="Sample outcome combining both recommendations"
+    # )
     
-    # You could also add additional descriptive text about the final style
-    st.write(
-        "The sleek black and yellow accents on the jacket pair well with the "
-        "blue newspaper print jeans, creating a unique streetwear statement."
-    )
+    # # You could also add additional descriptive text about the final style
+    # st.write(
+    #     "The sleek black and yellow accents on the jacket pair well with the "
+    #     "blue newspaper print jeans, creating a unique streetwear statement."
+    # )
