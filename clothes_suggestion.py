@@ -107,7 +107,7 @@ def show_clothes_suggestion():
     
     # Replace this placeholder with your actual image or a generated image
     st.image(
-        "https://placeholder.com/400x600",
+        "https://drive.google.com/file/d/1HiGRsAVpD-O1dUnlSoY1B7ZABxtZPqK4/view?usp=sharing",
         caption="Sample outcome combining both recommendations"
     )
     
