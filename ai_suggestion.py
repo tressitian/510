@@ -53,7 +53,7 @@ def show_ai_suggestion():
             },
             {
                 "title": "Smart Casual",
-                "image": "outfit_images/outfit2.jpg",
+                "image": "outfit_images/outfit2.jpeg",
                 "items": [
                     "Gray hoodie",
                     "Khaki pants",
@@ -113,7 +113,7 @@ def show_ai_suggestion():
             },
             {
                 "title": "Sporty Chic",
-                "image": "outfit_images/outfit1.jpg",
+                "image": "outfit_images/outfit2.jpeg",
                 "items": [
                     "Athletic jacket",
                     "Fitted tank top",
@@ -124,7 +124,7 @@ def show_ai_suggestion():
             },
             {
                 "title": "Weekend ",
-                "image": "outfit_images/outfit1.jpg",
+                "image": "outfit_images/outfit3.jpg",
                 "items": [
                     "Floral sundress",
                     "Denim jacket",
