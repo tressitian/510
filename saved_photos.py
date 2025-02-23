@@ -33,7 +33,7 @@ def show_saved_photos():
     if 'new_photo_taken' not in st.session_state:
         st.session_state.new_photo_taken = False
 
-    st.header("Your Photos")
+    st.header("Your Clothes in Closet")
     
     # Get list of photos and sort by date (newest first)
     photos = os.listdir(SAVE_DIR)
@@ -79,7 +79,7 @@ def show_saved_photos():
         st.info("No photos captured yet!")
 
     # Camera input section at the bottom
-    st.header("Take a New Photo")
+    st.header("Upload a new clothes")
     st.info("📸 The photo will be automatically cropped to a square from the center after capture.")
     img_file_buffer = st.camera_input(
         "Take a picture",
