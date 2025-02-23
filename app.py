@@ -4,7 +4,7 @@ import ai_suggestion
 import clothes_suggestion
 import analyze
 
-st.title("Webcam Photo Capture App")
+st.title("StyleFusion: Closet assistant")
 
 # Create tabs for navigation
 tab1, tab2, tab3, tab4 = st.tabs(["Your Closet", "Outfit Suggestions", "New Clothes Purchase", "Analyze"])
