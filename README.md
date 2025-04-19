@@ -12,6 +12,11 @@ Smart Closet is an AI-powered app that helps users manage their wardrobe and get
 
 The goal is to reduce decision fatigue, promote sustainable shopping, and boost confidence in personal style.
 
+## 🖼️ App Preview
+
+![Smart Closet App Screenshot](assets/images/app_screenshot.jpg)
+*Current UI showing the main navigation and screens*
+
 ## 🛠️ Project Structure
 
 ```
@@ -90,9 +95,6 @@ flutter run
 ### Week 3 Updates (Current)
 - ✅ Established the basic Flutter application framework
 - ✅ Implemented bottom navigation with four main screens
-- ✅ Created data models for clothing items and outfits
-- ✅ Developed service classes for wardrobe and outfit management
-- ✅ Built reusable UI components for displaying clothing items and outfits
 - ✅ Successfully tested the app on iOS device
 
 ### To-Do
