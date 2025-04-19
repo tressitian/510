@@ -12,9 +12,9 @@ Smart Closet is an AI-powered app that helps users manage their wardrobe and get
 
 The goal is to reduce decision fatigue, promote sustainable shopping, and boost confidence in personal style.
 
-## 🖼️ App Preview
+## 🖼️ App Preview (Week 3)
 
-![Smart Closet App Screenshot](assets/images/app_screenshot.jpg)
+![Smart Closet App Screenshot](assets/images/app_screenshot.png)
 *Current UI showing the main navigation and screens*
 
 ## 🛠️ Project Structure
