@@ -18,6 +18,10 @@ st.markdown(
         font-size: 1.25rem;
         font-weight: 700;
     }
+    /* 全局字体设置为 Arial 家族 */
+    body {
+        font-family: Arial, "Helvetica Neue", Helvetica, sans-serif !important;
+    }
     </style>
     """,
     unsafe_allow_html=True
