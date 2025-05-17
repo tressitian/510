@@ -4,6 +4,25 @@ import ai_suggestion
 import clothes_suggestion
 import analyze
 
+# Custom CSS: make content full width, not centered, and enlarge/bold tab font
+st.markdown(
+    """
+    <style>
+    .block-container {
+        max-width: 100vw !important;
+        padding-left: 2vw;
+        padding-right: 2vw;
+    }
+    /* Enlarge and bold tab font */
+    .stTabs [data-baseweb="tab"] {
+        font-size: 1.25rem;
+        font-weight: 700;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 st.title("StyleFusion: Closet assistant")
 
 # Create tabs for navigation
