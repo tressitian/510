@@ -33,56 +33,10 @@ def show_saved_photos():
     if 'new_photo_taken' not in st.session_state:
         st.session_state.new_photo_taken = False
 
-    st.header("Your Clothes in Closet")
-    
-    # Get list of photos and sort by date (newest first)
-    photos = os.listdir(SAVE_DIR)
-    photos = [p for p in photos if p.endswith(('.jpg', '.jpeg', '.png'))]
-    photos.sort(reverse=True)
-
-    # Display existing photos first
-    if photos:
-        # Define a fixed display size for all images
-        DISPLAY_SIZE = (300, 300)
-        
-        # Create three columns for photo display
-        col1, col2, col3 = st.columns(3)
-        
-        # Distribute photos across columns
-        for idx, photo in enumerate(photos):
-            # Load image and resize to fixed dimensions
-            img_path = os.path.join(SAVE_DIR, photo)
-            img = Image.open(img_path)
-            img = img.resize(DISPLAY_SIZE, Image.Resampling.LANCZOS)
-            
-            # Load metadata if exists
-            json_path = img_path + '.json'
-            if os.path.exists(json_path):
-                with open(json_path, 'r') as f:
-                    metadata = json.load(f)
-                
-                # Display in appropriate column
-                col = [col1, col2, col3][idx % 3]
-                with col:
-                    st.image(img, use_container_width=True)
-                    st.caption(f"👕 Type: {metadata['type']}")
-                    st.caption(f"✨ Style: {metadata['style']}")
-                    st.caption(f"🎨 Color: {metadata['color']}")
-                    st.caption(f"📅 Last worn: {metadata['date_wore'][-1]}")
-            else:
-                # Display without metadata
-                col = [col1, col2, col3][idx % 3]
-                with col:
-                    st.image(img, use_container_width=True)
-                    st.caption(f"ℹ️ No metadata available")
-    else:
-        st.info("No photos captured yet!")
-
-    # Camera input section at the bottom
+    # --- 上传新衣服区块（移到最上方） ---
     st.header("Upload a new clothes")
     st.info("📸 The photo will be automatically cropped to a square from the center after capture.")
 
-    # 新增：按钮控制摄像头显示
     if 'show_camera' not in st.session_state:
         st.session_state.show_camera = False
 
@@ -154,6 +108,52 @@ def show_saved_photos():
     # Reset new_photo_taken flag when camera input is cleared
     if img_file_buffer is None:
         st.session_state.new_photo_taken = False
+
+    # --- 展示衣服区块 ---
+    st.header("My Clothes in Closet")
+    
+    # Get list of photos and sort by date (newest first)
+    photos = os.listdir(SAVE_DIR)
+    photos = [p for p in photos if p.endswith(('.jpg', '.jpeg', '.png'))]
+    photos.sort(reverse=True)
+
+    # Display existing photos first
+    if photos:
+        # Define a fixed display size for all images
+        DISPLAY_SIZE = (300, 300)
+        
+        # Create three columns for photo display
+        col1, col2, col3 = st.columns(3)
+        
+        # Distribute photos across columns
+        for idx, photo in enumerate(photos):
+            # Load image and resize to fixed dimensions
+            img_path = os.path.join(SAVE_DIR, photo)
+            img = Image.open(img_path)
+            img = img.resize(DISPLAY_SIZE, Image.Resampling.LANCZOS)
+            
+            # Load metadata if exists
+            json_path = img_path + '.json'
+            if os.path.exists(json_path):
+                with open(json_path, 'r') as f:
+                    metadata = json.load(f)
+                
+                # Display in appropriate column
+                col = [col1, col2, col3][idx % 3]
+                with col:
+                    st.image(img, use_container_width=True)
+                    st.caption(f"👕 Type: {metadata['type']}")
+                    st.caption(f"✨ Style: {metadata['style']}")
+                    st.caption(f"🎨 Color: {metadata['color']}")
+                    st.caption(f"📅 Last worn: {metadata['date_wore'][-1]}")
+            else:
+                # Display without metadata
+                col = [col1, col2, col3][idx % 3]
+                with col:
+                    st.image(img, use_container_width=True)
+                    st.caption(f"ℹ️ No metadata available")
+    else:
+        st.info("No photos captured yet!")
 
 def get_clothing_metadata_from_gpt(image_path):
     """Use GPT-4-vision to analyze the clothing image and return metadata"""
