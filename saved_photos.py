@@ -81,14 +81,28 @@ def show_saved_photos():
     # Camera input section at the bottom
     st.header("Upload a new clothes")
     st.info("📸 The photo will be automatically cropped to a square from the center after capture.")
-    img_file_buffer = st.camera_input(
-        "Take a picture",
-        key="camera",
-        help="The photo will be cropped to a square after capture",
-        disabled=st.session_state.processing_photo,
-        label_visibility="visible"
-    )
-    
+
+    # 新增：按钮控制摄像头显示
+    if 'show_camera' not in st.session_state:
+        st.session_state.show_camera = False
+
+    if st.button("Take Photo"):
+        st.session_state.show_camera = True
+
+    img_file_buffer = None
+    if st.session_state.show_camera:
+        img_file_buffer = st.camera_input(
+            "Take a picture",
+            key="camera",
+            help="The photo will be cropped to a square after capture",
+            disabled=st.session_state.processing_photo,
+            label_visibility="collapsed"
+        )
+
+    # 拍照后自动隐藏摄像头
+    if img_file_buffer is not None and st.session_state.show_camera:
+        st.session_state.show_camera = False
+
     if (img_file_buffer is not None and 
         not st.session_state.processing_photo and 
         not st.session_state.new_photo_taken):  # Only process if it's a new photo
