@@ -117,8 +117,41 @@ def show_saved_photos():
     photos = [p for p in photos if p.endswith(('.jpg', '.jpeg', '.png'))]
     photos.sort(reverse=True)
 
+    # --- 筛选区块 ---
+    # 收集所有标签选项
+    all_types, all_styles, all_colors = set(), set(), set()
+    photo_metadata = {}
+    for photo in photos:
+        json_path = os.path.join(SAVE_DIR, photo) + '.json'
+        if os.path.exists(json_path):
+            with open(json_path, 'r') as f:
+                metadata = json.load(f)
+                photo_metadata[photo] = metadata
+                all_types.add(metadata.get('type', ''))
+                all_styles.add(metadata.get('style', ''))
+                all_colors.add(metadata.get('color', ''))
+
+    # Streamlit 多选筛选器
+    selected_types = st.multiselect('Filter by Type', sorted([t for t in all_types if t]), default=[])
+    selected_styles = st.multiselect('Filter by Style', sorted([s for s in all_styles if s]), default=[])
+    selected_colors = st.multiselect('Filter by Color', sorted([c for c in all_colors if c]), default=[])
+
+    # 根据筛选条件过滤照片
+    def match(photo):
+        meta = photo_metadata.get(photo)
+        if not meta:
+            return True  # 没有元数据的图片默认显示
+        if selected_types and meta.get('type') not in selected_types:
+            return False
+        if selected_styles and meta.get('style') not in selected_styles:
+            return False
+        if selected_colors and meta.get('color') not in selected_colors:
+            return False
+        return True
+    filtered_photos = [p for p in photos if match(p)]
+
     # Display existing photos first
-    if photos:
+    if filtered_photos:
         # Define a fixed display size for all images
         DISPLAY_SIZE = (300, 300)
         
@@ -126,7 +159,7 @@ def show_saved_photos():
         col1, col2, col3 = st.columns(3)
         
         # Distribute photos across columns
-        for idx, photo in enumerate(photos):
+        for idx, photo in enumerate(filtered_photos):
             # Load image and resize to fixed dimensions
             img_path = os.path.join(SAVE_DIR, photo)
             img = Image.open(img_path)
@@ -146,14 +179,26 @@ def show_saved_photos():
                     st.caption(f"✨ Style: {metadata['style']}")
                     st.caption(f"🎨 Color: {metadata['color']}")
                     st.caption(f"📅 Last worn: {metadata['date_wore'][-1]}")
+                    # 删除按钮
+                    if st.button(f"Delete", key=f"delete_{photo}"):
+                        os.remove(img_path)
+                        if os.path.exists(json_path):
+                            os.remove(json_path)
+                        st.success("Photo deleted!")
+                        st.rerun()
             else:
                 # Display without metadata
                 col = [col1, col2, col3][idx % 3]
                 with col:
                     st.image(img, use_container_width=True)
                     st.caption(f"ℹ️ No metadata available")
+                    # 删除按钮
+                    if st.button(f"Delete", key=f"delete_{photo}"):
+                        os.remove(img_path)
+                        st.success("Photo deleted!")
+                        st.rerun()
     else:
-        st.info("No photos captured yet!")
+        st.info("No photos captured yet or no clothes match the filter!")
 
 def get_clothing_metadata_from_gpt(image_path):
     """Use GPT-4-vision to analyze the clothing image and return metadata"""
