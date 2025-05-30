@@ -4,7 +4,9 @@ import json
 from os import environ
 from dotenv import load_dotenv
 load_dotenv()
-API_KEY = environ["OPENAI_API_KEY"]
+import streamlit as st
+
+api_key = st.secrets["OPENAI_API_KEY"]
 
 
 
