@@ -5,7 +5,9 @@ from datetime import datetime
 import os
 from PIL import Image
 import json
-from utils.gpt_vision import call_gpt4_vision  # Update import
+# from utils.gpt_vision import call_gpt4_vision  # 注释GPT导入
+from utils.gemini_vision import call_gemini_vision  # 启用Gemini导入
+# from utils.gemini_vision import call_gemini_vision  # 注释Gemini导入
 import time
 
 SAVE_DIR = "captured_images"
@@ -82,8 +84,8 @@ def show_saved_photos():
         image_rgb = cv2.cvtColor(cropped_image, cv2.COLOR_BGR2RGB)
         cv2.imwrite(filename, cropped_image)
         
-        # Get metadata from GPT
-        metadata = get_clothing_metadata_from_gpt(filename)
+        # Get metadata from Gemini
+        metadata = get_clothing_metadata_from_gemini(filename)
         if metadata:
             # Save metadata to JSON file
             with open(json_filename, 'w') as f:
@@ -200,27 +202,27 @@ def show_saved_photos():
     else:
         st.info("No photos captured yet or no clothes match the filter!")
 
-def get_clothing_metadata_from_gpt(image_path):
-    """Use GPT-4-vision to analyze the clothing image and return metadata"""
-    prompt = """Analyze this clothing item and provide ONLY a JSON object with these exact keys:
-    {
-        "type": "the type of clothing (e.g., jacket, shirt, pants, dress)",
-        "style": "the style (e.g., casual, formal, sporty)",
-        "color": "the primary color"
+def get_clothing_metadata_from_gemini(image_path):
+    """Use Gemini Vision to analyze the clothing image and return metadata"""
+    prompt = """Analyze this clothing item and provide ONLY a JSON object with these exact keys:\n{
+        \"type\": \"the type of clothing (e.g., jacket, shirt, pants, dress)\",
+        \"style\": \"the style (e.g., casual, formal, sporty)\",
+        \"color\": \"the primary color\"
     }"""
-    
+    api_key = st.secrets["gemini"]["api_key"]
     try:
-        response = call_gpt4_vision(image_path, prompt)
-        content = response.choices[0].message.content.strip()
+        content = call_gemini_vision(image_path, prompt, api_key)
         content = content.replace('\n', '').replace('\r', '').strip()
         if content.startswith('```json'):
             content = content[7:-3].strip()
         elif content.startswith('```'):
             content = content[3:-3].strip()
-            
         metadata = json.loads(content)
         metadata["date_wore"] = [datetime.now().strftime("%Y-%m-%d")]
         return metadata
     except Exception as e:
-        st.error(f"Error analyzing image: {str(e)}")
+        st.error(f"Error analyzing image (Gemini): {str(e)}")
         return None
+
+# def get_clothing_metadata_from_gemini(image_path):
+#     ... # Gemini相关代码保留但注释

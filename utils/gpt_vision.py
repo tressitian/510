@@ -1,3 +1,4 @@
+# 推荐使用Gemini API，GPT相关内容已注释。如需用GPT请用st.secrets["openai"]["api_key"]
 import openai
 import base64
 import json
@@ -6,8 +7,7 @@ from dotenv import load_dotenv
 load_dotenv()
 import streamlit as st
 
-api_key = st.secrets["OPENAI_API_KEY"]
-
+# api_key = st.secrets["OPENAI_API_KEY"]  # 已弃用，推荐用st.secrets["openai"]["api_key"]
 
 
 def encode_image(image_path):
@@ -18,7 +18,9 @@ def encode_image(image_path):
 def call_gpt4_vision(image_path, prompt):
     """Call GPT-4 Vision API to analyze image"""
     base64_image = encode_image(image_path)
-    
+    # 动态获取API Key，推荐用secrets["openai"]["api_key"]
+    api_key = st.secrets["openai"]["api_key"]
+    openai.api_key = api_key
     try:
         response = openai.ChatCompletion.create(
             model="gpt-4o-mini",  # Using the official GPT-4 Vision model

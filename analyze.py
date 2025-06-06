@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 import calendar
 import os, json
 import random
+from collections import defaultdict
 
 def show_analyze():
     st.header("Analyze Your Outfit Style and Use Frequency")
@@ -76,10 +77,39 @@ def show_analyze():
     st.divider()
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # Monthly calendar view
+    # --- Monthly calendar with month switch ---
     st.subheader("Monthly Outfit Calendar")
-    current_date = datetime.now()
-    month_calendar = calendar.monthcalendar(current_date.year, current_date.month)
+    # 月份切换器（左右按钮）
+    today = datetime.now()
+    min_year = 2025
+    max_year = today.year
+    # 当前选中的年月，初始为今年6月
+    if 'calendar_year' not in st.session_state:
+        st.session_state['calendar_year'] = today.year
+    if 'calendar_month' not in st.session_state:
+        st.session_state['calendar_month'] = 6
+    col_prev, col_label, col_next = st.columns([1,2,1])
+    with col_prev:
+        if st.button('←', key='prev_month'):
+            if st.session_state['calendar_month'] == 1:
+                if st.session_state['calendar_year'] > min_year:
+                    st.session_state['calendar_year'] -= 1
+                    st.session_state['calendar_month'] = 12
+            else:
+                st.session_state['calendar_month'] -= 1
+    with col_next:
+        if st.button('→', key='next_month'):
+            if st.session_state['calendar_month'] == 12:
+                if st.session_state['calendar_year'] < max_year:
+                    st.session_state['calendar_year'] += 1
+                    st.session_state['calendar_month'] = 1
+            else:
+                st.session_state['calendar_month'] += 1
+    with col_label:
+        st.markdown(f"<h5 style='text-align:center'>{st.session_state['calendar_year']}年{st.session_state['calendar_month']:02d}月</h5>", unsafe_allow_html=True)
+    sel_year = st.session_state['calendar_year']
+    sel_month = st.session_state['calendar_month']
+    month_calendar = calendar.monthcalendar(sel_year, sel_month)
 
     # 获取所有衣服图片路径
     image_dir = "captured_images"
@@ -92,17 +122,54 @@ def show_analyze():
         with week_cols[i]:
             st.markdown(f"**{wd}**")
     # Create calendar grid
+    # 统计每一天的图片（按日期）
+    photo_by_date = defaultdict(list)
+    for fname in os.listdir(image_dir):
+        if fname.endswith(('.jpg', '.jpeg', '.png')):
+            json_path = os.path.join(image_dir, fname + '.json') if not fname.endswith('.json') else fname
+            if not fname.endswith('.json'):
+                json_path = os.path.join(image_dir, fname + '.json')
+            else:
+                continue
+            if os.path.exists(json_path):
+                with open(json_path, 'r') as f:
+                    try:
+                        meta = json.load(f)
+                        # 取每个date_wore日期
+                        for d in meta.get('date_wore', []):
+                            photo_by_date[d].append(os.path.join(image_dir, fname))
+                    except Exception:
+                        pass
+    # 当前日
+    today_str = datetime.now().strftime('%Y-%m-%d')
+    CLOTHES_ICON = "https://cdn-icons-png.flaticon.com/512/892/892458.png"  # 衣服icon
+    # 当前月的所有天
     for week in month_calendar:
         cols = st.columns(7)
         for i, day in enumerate(week):
             with cols[i]:
                 if day != 0:
                     st.write(f"{day}")
-                    if all_imgs:
-                        img_path = os.path.join(image_dir, random.choice(all_imgs))
-                        st.image(img_path, width=50)
+                    date_str = f"{sel_year}-{sel_month:02d}-{day:02d}"
+                    if date_str > today_str:
+                        st.image(CLOTHES_ICON, width=40)
+                    elif date_str in photo_by_date:
+                        imgs = photo_by_date[date_str]
+                        if len(imgs) == 1:
+                            st.image(imgs[0], width=50)
+                        else:
+                            # 只显示一张图片，右下角加眼睛按钮，点击展开expander
+                            st.image(imgs[0], width=50)
+                            btn_key = f"show_{date_str}"
+                            eye_icon = "👁️"
+                            if st.button(eye_icon, key=btn_key):
+                                st.session_state[f"show_expander_{date_str}"] = not st.session_state.get(f"show_expander_{date_str}", False)
+                            if st.session_state.get(f"show_expander_{date_str}", False):
+                                with st.expander(f"{len(imgs)} photos on {date_str}", expanded=True):
+                                    for img_path in imgs:
+                                        st.image(img_path, width=120)
                     else:
-                        st.image("https://via.placeholder.com/100", width=50)
+                        st.image(CLOTHES_ICON, width=40)
                 else:
                     st.write("")
 

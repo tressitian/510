@@ -4,7 +4,9 @@ import json
 from os import environ
 from dotenv import load_dotenv
 # load_dotenv()
-API_KEY = "your api key"
+import streamlit as st
+
+api_key = st.secrets["OPENAI_API_KEY"]
 
 
 def call_gpt4_vision(prompt):
